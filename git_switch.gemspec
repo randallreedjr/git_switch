@@ -32,12 +32,12 @@ Gem::Specification.new do |spec|
     'lib/git_switch.rb',
     'lib/git_switch/switcher.rb',
     'lib/git_switch/version.rb',
-    'bin/switch'
+    'bin/git-switch'
   ]
 
   # spec.bindir        = "exe"
   # spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.executables   << 'switch'
+  spec.executables   << 'git-switch'
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.16"
