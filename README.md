@@ -1,38 +1,46 @@
-# GitSwitch
+[![CircleCI](https://circleci.com/gh/randallreedjr/git_switch.svg?style=shield)](https://circleci.com/gh/randallreedjr/git_switch)
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/git_switch`. To experiment with that code, run `bin/console` for an interactive prompt.
+# Git Switch
 
-TODO: Delete this and the text above, and describe your gem
+Git Switch is a command line utility to easily switch between multiple git profiles. It uses a `.gitswitch` YAML file to configure each profile (name, username, and email) and ssh key.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'git_switch'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+This gem is not intended to be installed via a Gemfile. Instead, install it yourself:
 
     $ gem install git_switch
 
+## Configuration
+
+Although a guided setup is planned, for now you must manually create your configuration at `~/.gitswitch`. The config file is in YAML format. Here is an example.
+
+```
+personal:
+  username: johnnyfive
+  email: me@johnsmith.com
+  name: Johnny Smith
+  ssh: ~/.ssh/id_rsa
+work:
+  username: johnsmith
+  email: john@defmethod.io
+  name: John Smith
+  ssh: ~/.ssh/defmethod_rsa
+```
+
+Note that the ssh key must already exist. See these instructions to [generate a new SSH key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/).
+
+The root keys can be any nickname you want. It should be memorable to make it easy to switch between profiles.
+
 ## Usage
 
-TODO: Write usage instructions here
+Git Switch follows the convention to create a custom git command. It can be invoked as follows, to either set your git profile locally or globally:
 
-## Development
+```
+$ git switch personal
+$ git switch personal -g
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/git_switch.
+Note that currently, invoking `git switch` will remove all identities from `ssh-add`, except the one specified. You can always readd them using `ssh-add path/to/ssh`.
 
 ## License
 
