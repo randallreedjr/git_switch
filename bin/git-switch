@@ -1,10 +1,4 @@
 #!/usr/bin/env ruby
 require_relative '../lib/git_switch'
 
-# TODO: RCR - Verify profile exists in config file
-switch = GitSwitch::Switcher.new
-if ARGV.length == 1
-  switch.set!(ARGV.first)
-else
-  puts "Please provide the profile to use"
-end
+GitSwitch::Switcher.new(ARGV).set!
