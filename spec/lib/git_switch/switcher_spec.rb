@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe GitSwitch::Switcher do
+  before do
+    allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+  end
+
   describe '#global' do
     context 'when -g is passed as first argument' do
       it 'sets to true' do
