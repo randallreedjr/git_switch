@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/randallreedjr/git_switch.svg?style=shield)](https://circleci.com/gh/randallreedjr/git_switch)
+[![Gem Version](https://badge.fury.io/rb/git_switch.svg)](https://badge.fury.io/rb/git_switch)
 
 # Git Switch
 
