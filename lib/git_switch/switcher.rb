@@ -1,7 +1,6 @@
 # require 'version'
 require 'yaml'
 require_relative './version'
-require 'byebug'
 
 module GitSwitch
   class Switcher
