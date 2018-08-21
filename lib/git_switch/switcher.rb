@@ -4,18 +4,27 @@ require_relative './version'
 
 module GitSwitch
   class Switcher
-    attr_reader :config, :profile, :valid, :global
-    # Your code goes here...
+    attr_reader :config, :profile, :valid, :global, :list
+
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
       @config = YAML.load_file(File.expand_path('~/.gitswitch'))
       @global = check_global(args)
       @profile = get_profile(args)
       @valid = valid_args?(args)
+      @list = check_list(args)
+    end
+
+    def run
+      list ? print_list : set!
     end
 
     def check_global(args)
       (args.include? '-g') || (args.include? '--global')
+    end
+
+    def check_list(args)
+      (args.include? '-l') || (args.include? '--list')
     end
 
     def get_profile(args)
@@ -50,6 +59,10 @@ module GitSwitch
       `ssh-add -D`
       `ssh-add #{ssh}`
       puts `ssh-add -l`
+    end
+
+    def print_list
+      puts config.keys
     end
 
     private
