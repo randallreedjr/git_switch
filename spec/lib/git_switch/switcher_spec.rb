@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe GitSwitch::Switcher do
-  before do
-    allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
-  end
-
   describe '#global' do
+    before do
+      allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+    end
     context 'when -g is passed as first argument' do
       it 'sets to true' do
         expect(GitSwitch::Switcher.new(['-g','foo']).global).to be true
@@ -38,6 +37,9 @@ RSpec.describe GitSwitch::Switcher do
   end
 
   describe '#profile' do
+    before do
+      allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+    end
     context 'when profile is only argument' do
       it 'sets correctly' do
         expect(GitSwitch::Switcher.new(['foo']).profile).to eq 'foo'
@@ -57,6 +59,9 @@ RSpec.describe GitSwitch::Switcher do
   end
 
   describe '#list' do
+    before do
+      allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+    end
     context 'when -l is passed as only argument' do
       it 'sets to true' do
         expect(GitSwitch::Switcher.new(['-l']).list).to be true
@@ -101,6 +106,9 @@ RSpec.describe GitSwitch::Switcher do
   end
 
   describe '#run' do
+    before do
+      allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+    end
     context 'in list mode' do
       let(:switcher) { GitSwitch::Switcher.new(['-l']) }
       it 'calls print_list' do
@@ -120,9 +128,26 @@ RSpec.describe GitSwitch::Switcher do
 
   describe '#print_list' do
     let(:switcher) { GitSwitch::Switcher.new(['-l']) }
-    let(:expected_output) { "personal\nwork\n" }
-    it 'outputs available profiles' do
-      expect{switcher.print_list}.to output(expected_output).to_stdout
+    context 'when profiles have been configured' do
+      before do
+        allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+      end
+      let(:expected_output) { "personal\nwork\n" }
+      it 'outputs available profiles' do
+        expect{switcher.print_list}.to output(expected_output).to_stdout
+      end
+    end
+
+    context 'when no profiles have been configured' do
+      let(:expected_output) { '' }
+      before do
+        allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.empty'))
+      end
+
+      it 'outputs an empty string' do
+        # allow(switcher).to receive(:config).and_return({})
+        expect{switcher.print_list}.to output(expected_output).to_stdout
+      end
     end
   end
 end

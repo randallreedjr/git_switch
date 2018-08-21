@@ -8,7 +8,7 @@ module GitSwitch
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
-      @config = YAML.load_file(File.expand_path('~/.gitswitch'))
+      @config = load_config
       @global = check_global(args)
       @profile = get_profile(args)
       @valid = valid_args?(args)
@@ -17,6 +17,10 @@ module GitSwitch
 
     def run
       list ? print_list : set!
+    end
+
+    def load_config
+      YAML.load_file(File.expand_path('~/.gitswitch')) || {}
     end
 
     def check_global(args)
