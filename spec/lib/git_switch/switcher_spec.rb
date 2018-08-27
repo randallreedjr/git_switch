@@ -161,7 +161,10 @@ RSpec.describe GitSwitch::Switcher do
     end
   end
 
-  describe 'valid_profile' do
+  describe 'invalid_args?' do
+  end
+false
+  describe 'valid_profile?' do
     before do
       allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
     end
@@ -169,14 +172,19 @@ RSpec.describe GitSwitch::Switcher do
     context 'when profile is configured' do
       let(:switcher) { GitSwitch::Switcher.new(['personal']) }
       it 'returns true' do
-        expect(switcher.valid_profile).to be true
+        expect(switcher.valid_profile?).to be true
       end
     end
 
     context 'when profile is not configured' do
       let(:switcher) { GitSwitch::Switcher.new(['foo']) }
-      it 'returns true' do
-        expect(switcher.valid_profile).to be false
+      let(:expected_output) { "Profile 'foo' not found!\n" }
+      it 'returns false' do
+        expect(switcher.valid_profile?).to be false
+      end
+
+      it 'prints error message' do
+        expect{switcher.valid_profile?}.to output(expected_output).to_stdout
       end
     end
   end

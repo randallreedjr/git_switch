@@ -3,14 +3,14 @@ require_relative './version'
 
 module GitSwitch
   class Switcher
-    attr_reader :config, :profile, :global, :list, :valid_args
+    attr_reader :args, :config, :profile, :global, :list
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
+      @args = args
       @config = load_config
       @global = check_global(args)
       @profile = get_profile(args)
-      @valid_args = valid_args?(args)
       @list = check_list(args)
     end
 
@@ -36,8 +36,22 @@ module GitSwitch
       args.detect {|a| !a.start_with? '-'}
     end
 
-    def valid_args?(args)
-      no_flags?(args) || one_flag?(args)
+    def valid_args?
+      if no_flags?(args) || one_flag?(args)
+        return true
+      else
+        puts "Invalid args"
+        return false
+      end
+    end
+
+    def valid_profile?
+      if config.has_key?(profile)
+        return true
+      else
+        puts "Profile '#{profile}' not found!"
+        return false
+      end
     end
 
     def no_flags?(args)
@@ -49,11 +63,7 @@ module GitSwitch
     end
 
     def set!
-      return unless valid_args
-      unless valid_profile
-        puts "Profile '#{profile}' not found!"
-        return
-      end
+      return unless valid_args? && valid_profile?
 
       flag = global ? '--global' : ''
 
@@ -71,10 +81,6 @@ module GitSwitch
 
     def print_list
       puts config.keys
-    end
-
-    def valid_profile
-      config.has_key?(profile)
     end
 
     private
