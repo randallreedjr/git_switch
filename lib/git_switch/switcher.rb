@@ -1,17 +1,16 @@
-# require 'version'
 require 'yaml'
 require_relative './version'
 
 module GitSwitch
   class Switcher
-    attr_reader :config, :profile, :valid, :global, :list
+    attr_reader :args, :config, :profile, :global, :list
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
+      @args = args
       @config = load_config
       @global = check_global(args)
       @profile = get_profile(args)
-      @valid = valid_args?(args)
       @list = check_list(args)
     end
 
@@ -37,20 +36,42 @@ module GitSwitch
       args.detect {|a| !a.start_with? '-'}
     end
 
-    def valid_args?(args)
-      no_flags?(args) || one_flag?(args)
+    def valid_args?
+      if check_list(args) && args.count > 1
+        puts "Invalid args"
+        return false
+      elsif no_flags?(args) || one_flag?(args)
+        return true
+      else
+        puts "Invalid args"
+        return false
+      end
+    end
+
+    def valid_profile?
+      if config.has_key?(profile)
+        return true
+      else
+        puts "Profile '#{profile}' not found!"
+        return false
+      end
     end
 
     def no_flags?(args)
-      args.length == 1 && args.count {|a| a.start_with? '-'} == 0
+      args.length == 1 && flag_count(args) == 0
     end
 
     def one_flag?(args)
-      args.length == 2 && args.count {|a| a.start_with?('-')} == 1
+      args.length == 2 && flag_count(args) == 1
+    end
+
+    def flag_count(args)
+      args.count {|a| a.start_with? '-'}
     end
 
     def set!
-      return unless valid
+      return unless valid_args? && valid_profile?
+
       flag = global ? '--global' : ''
 
       puts "\nGit Config:"
