@@ -161,9 +161,67 @@ RSpec.describe GitSwitch::Switcher do
     end
   end
 
-  describe 'invalid_args?' do
+  describe 'valid_args?' do
+    let(:expected_error) { "Invalid args\n" }
+    context 'when run with a single profile' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal']) }
+      it 'returns true' do
+        expect(switcher.valid_args?).to be true
+      end
+    end
+
+    context 'when run with a profile and a flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal','-g']) }
+      it 'returns true' do
+        expect(switcher.valid_args?).to be true
+      end
+    end
+
+    context 'when run with a profile and non-profile flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal','-l']) }
+      it 'returns false' do
+        expect(switcher.valid_args?).to be false
+      end
+
+      it 'prints error message' do
+        expect{switcher.valid_args?}.to output(expected_error).to_stdout
+      end
+    end
+
+    context 'when run with multiple flags' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal','-g','-l']) }
+      it 'returns false' do
+        expect(switcher.valid_args?).to be false
+      end
+
+      it 'prints error message' do
+        expect{switcher.valid_args?}.to output(expected_error).to_stdout
+      end
+    end
+
+    context 'when run with multiple profiles' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal','work']) }
+      it 'returns false' do
+        expect(switcher.valid_args?).to be false
+      end
+
+      it 'prints error message' do
+        expect{switcher.valid_args?}.to output(expected_error).to_stdout
+      end
+    end
+
+    context 'when run with no args' do
+      let(:switcher) { GitSwitch::Switcher.new([]) }
+      it 'returns false' do
+        expect(switcher.valid_args?).to be false
+      end
+
+      it 'prints error message' do
+        expect{switcher.valid_args?}.to output(expected_error).to_stdout
+      end
+    end
   end
-false
+
   describe 'valid_profile?' do
     before do
       allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))

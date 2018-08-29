@@ -37,7 +37,10 @@ module GitSwitch
     end
 
     def valid_args?
-      if no_flags?(args) || one_flag?(args)
+      if check_list(args) && args.count > 1
+        puts "Invalid args"
+        return false
+      elsif no_flags?(args) || one_flag?(args)
         return true
       else
         puts "Invalid args"
@@ -55,11 +58,15 @@ module GitSwitch
     end
 
     def no_flags?(args)
-      args.length == 1 && args.count {|a| a.start_with? '-'} == 0
+      args.length == 1 && flag_count(args) == 0
     end
 
     def one_flag?(args)
-      args.length == 2 && args.count {|a| a.start_with?('-')} == 1
+      args.length == 2 && flag_count(args) == 1
+    end
+
+    def flag_count(args)
+      args.count {|a| a.start_with? '-'}
     end
 
     def set!
