@@ -107,9 +107,24 @@ RSpec.describe GitSwitch::Switcher do
     end
 
     context 'in set mode' do
-      let(:switcher) { GitSwitch::Switcher.new(['foo']) }
+      let(:switcher) { GitSwitch::Switcher.new(['personal']) }
       it 'calls set!' do
         expect(switcher).to receive(:set!)
+        switcher.run
+      end
+
+      it 'checks for valid args' do
+        expect(switcher).to receive(:valid_args?)
+        switcher.run
+      end
+
+      it 'checks for valid profile' do
+        expect(switcher).to receive(:valid_profile?)
+        switcher.run
+      end
+
+      it 'checks for git repo' do
+        expect(switcher).to receive(:git_repo?)
         switcher.run
       end
     end
@@ -224,6 +239,32 @@ RSpec.describe GitSwitch::Switcher do
 
       it 'prints error message' do
         expect{switcher.valid_profile?}.to output(expected_output).to_stdout
+      end
+    end
+  end
+
+  describe 'git_repo?' do
+    let(:switcher) { GitSwitch::Switcher.new(['personal']) }
+    context 'when GitHelper returns true' do
+      before do
+        allow(GitSwitch::GitHelper).to receive(:git_repo?).and_return(File.expand_path('.'))
+      end
+      it 'returns true' do
+        expect(switcher.git_repo?).to be true
+      end
+    end
+
+    context 'when GitHelper returns false' do
+      let(:expected_error) { "Not a git repo. Please run from a git repo or run with `-g` to update global settings.\n" }
+      before do
+        allow(GitSwitch::GitHelper).to receive(:git_repo?).and_return(nil)
+      end
+      it 'returns false' do
+        expect(switcher.git_repo?).to be false
+      end
+
+      it 'prints error message' do
+        expect{switcher.git_repo?}.to output(expected_error).to_stdout
       end
     end
   end
