@@ -11,4 +11,7 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+  config.before(:each) do
+    allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.gitswitch'))
+  end
 end
