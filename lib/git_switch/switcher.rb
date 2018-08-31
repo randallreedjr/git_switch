@@ -3,49 +3,29 @@ require_relative './version'
 
 module GitSwitch
   class Switcher
-    attr_reader :args, :config, :profile, :global, :list
+    attr_reader :config, :profile, :options
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
-      @args = args
       @config = load_config
-      @global = check_global(args)
+      @options = GitSwitch::Options.new(args)
       @profile = get_profile(args)
-      @list = check_list(args)
     end
 
     def run
-      list ? print_list : set!
+      list? ? print_list : set!
     end
 
-    def load_config
-      YAML.load_file(File.expand_path('~/.gitswitch')) || {}
+    def list?
+      options.list?
     end
 
-    def check_global(args)
-      (args.include? '-g') || (args.include? '--global')
-    end
-
-    def check_list(args)
-      (args.include? '-l') || (args.include? '--list')
+    def global?
+      options.global?
     end
 
     def get_profile(args)
-      # TODO: RCR - Verify profile exists in config file
-      # TODO: RCR - Handle missing or empty config file
       args.detect {|a| !a.start_with? '-'}
-    end
-
-    def valid_args?
-      if check_list(args) && args.count > 1
-        puts "Invalid args"
-        return false
-      elsif no_flags?(args) || one_flag?(args)
-        return true
-      else
-        puts "Invalid args"
-        return false
-      end
     end
 
     def valid_profile?
@@ -61,7 +41,7 @@ module GitSwitch
       if GitHelper.git_repo?
         return true
       else
-        if global
+        if global?
           return true
         else
           puts "Not a git repo. Please run from a git repo or run with `-g` to update global settings."
@@ -70,34 +50,14 @@ module GitSwitch
       end
     end
 
-    def no_flags?(args)
-      args.length == 1 && flag_count(args) == 0
-    end
-
-    def one_flag?(args)
-      args.length == 2 && flag_count(args) == 1
-    end
-
-    def flag_count(args)
-      args.count {|a| a.start_with? '-'}
-    end
-
     def set!
-      return unless valid_args? && valid_profile?
+      return unless options.valid_args? && valid_profile?
       return unless git_repo?
 
-      flag = global ? '--global' : ''
+      flag = global? ? '--global' : ''
 
-      puts "\nGit Config:"
-      `git config #{flag} user.name "#{name}"`
-      `git config #{flag} user.username "#{username}"`
-      `git config #{flag} user.email "#{email}"`
-      puts `git config #{flag} -l --show-origin | grep user`
-
-      puts "\nSSH:"
-      `ssh-add -D`
-      `ssh-add #{ssh}`
-      puts `ssh-add -l`
+      set_git_config(flag)
+      set_ssh
     end
 
     def print_list
@@ -105,6 +65,11 @@ module GitSwitch
     end
 
     private
+
+    def load_config
+      # TODO: RCR - Handle missing or empty config file
+      YAML.load_file(File.expand_path('~/.gitswitch')) || {}
+    end
 
     def name
       config[profile]["name"]
@@ -120,6 +85,21 @@ module GitSwitch
 
     def ssh
       config[profile]["ssh"]
+    end
+
+    def set_git_config(flag)
+      puts "\nGit Config:"
+      `git config #{flag} user.name "#{name}"`
+      `git config #{flag} user.username "#{username}"`
+      `git config #{flag} user.email "#{email}"`
+      puts `git config #{flag} -l --show-origin | grep user`
+    end
+
+    def set_ssh
+      puts "\nSSH:"
+      `ssh-add -D`
+      `ssh-add #{ssh}`
+      puts `ssh-add -l`
     end
   end
 end

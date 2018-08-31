@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
     'lib/git_switch.rb',
     'lib/git_switch/switcher.rb',
     'lib/git_switch/git_helper.rb',
+    'lib/git_switch/options.rb',
     'lib/git_switch/version.rb',
     'bin/git-switch'
   ]
