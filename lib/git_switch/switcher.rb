@@ -57,6 +57,19 @@ module GitSwitch
       end
     end
 
+    def git_repo?
+      if GitHelper.git_repo?
+        return true
+      else
+        if global
+          return true
+        else
+          puts "Not a git repo. Please run from a git repo or run with `-g` to update global settings."
+          return false
+        end
+      end
+    end
+
     def no_flags?(args)
       args.length == 1 && flag_count(args) == 0
     end
@@ -71,6 +84,7 @@ module GitSwitch
 
     def set!
       return unless valid_args? && valid_profile?
+      return unless git_repo?
 
       flag = global ? '--global' : ''
 
