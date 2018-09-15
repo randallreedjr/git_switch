@@ -61,7 +61,12 @@ module GitSwitch
     end
 
     def print_list
-      puts config.keys
+      profiles = config.map do |key, value|
+        prefix = value["username"] == current_git_username ? "=>" : "  "
+        "#{prefix} #{key}"
+      end
+      puts profiles
+      puts '# => - current' if config.any? {|key, value| value["username"] == current_git_username}
     end
 
     private
@@ -69,6 +74,10 @@ module GitSwitch
     def load_config
       # TODO: RCR - Handle missing or empty config file
       YAML.load_file(File.expand_path('~/.gitswitch')) || {}
+    end
+
+    def current_git_username
+      `git config user.username`
     end
 
     def name
