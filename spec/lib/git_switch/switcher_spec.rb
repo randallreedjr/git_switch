@@ -143,9 +143,21 @@ RSpec.describe GitSwitch::Switcher do
   describe '#print_list' do
     let(:switcher) { GitSwitch::Switcher.new(['-l']) }
     context 'when profiles have been configured' do
-      let(:expected_output) { "personal\nwork\n" }
-      it 'outputs available profiles' do
-        expect{switcher.print_list}.to output(expected_output).to_stdout
+      context 'when no profiles are active' do
+        let(:expected_output) { "   personal\n   work\n" }
+        it 'outputs available profiles' do
+          expect{switcher.print_list}.to output(expected_output).to_stdout
+        end
+      end
+
+      context 'when a profile is active' do
+        before do
+          allow(switcher).to receive(:current_git_username).and_return('johnnyfive')
+        end
+        let(:expected_output) { "=> personal\n   work\n\n# => - current\n" }
+        fit 'indicates the active profile' do
+          expect{switcher.print_list}.to output(expected_output).to_stdout
+        end
       end
     end
 
