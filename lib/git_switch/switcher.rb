@@ -66,7 +66,7 @@ module GitSwitch
         "#{prefix} #{key}"
       end
       puts profiles
-      puts '# => - current' if config.any? {|key, value| value["username"] == current_git_username}
+      puts "\n# => - current" if config.any? {|key, value| value["username"] == current_git_username}
     end
 
     private
@@ -77,7 +77,7 @@ module GitSwitch
     end
 
     def current_git_username
-      `git config user.username`
+      `git config user.username`.chomp
     end
 
     def name
