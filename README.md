@@ -43,6 +43,10 @@ $ git switch personal -g
 
 Note that currently, invoking `git switch` will remove all identities from `ssh-add`, except the one specified. You can always readd them using `ssh-add path/to/ssh`.
 
+### Flags
+
+* Use `-l` or `--list` to list configured profiles
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
