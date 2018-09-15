@@ -38,15 +38,11 @@ module GitSwitch
     end
 
     def git_repo?
-      if GitHelper.git_repo?
+      if GitHelper.git_repo? || global?
         return true
       else
-        if global?
-          return true
-        else
-          puts "Not a git repo. Please run from a git repo or run with `-g` to update global settings."
-          return false
-        end
+        puts "Not a git repo. Please run from a git repo or run with `-g` to update global settings."
+        return false
       end
     end
 
