@@ -7,7 +7,8 @@ module GitSwitch
 
     def flags
       @flags ||= args.select do |arg|
-        arg.match /\-[glv]{1}/
+        arg.match(/\A\-[glv]{1}\z/) ||
+          arg.match(/\A\-\-(global|list|verbose){1}\z/)
       end
     end
 

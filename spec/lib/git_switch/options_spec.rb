@@ -4,24 +4,63 @@ RSpec.describe GitSwitch::Options do
   let(:options) { GitSwitch::Options.new(args) }
 
   describe 'flags' do
-    context 'when run in list mode' do
-      let(:args) { ['-l'] }
-      it 'returns an empty array' do
-        expect(options.flags).to eq ['-l']
+    context 'when short flags are used' do
+      context 'when run in list mode' do
+        let(:args) { ['-l'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq ['-l']
+        end
+      end
+
+      context 'when run in global mode' do
+        let(:args) { ['personal', '-g'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq ['-g']
+        end
+      end
+
+      context 'when run with multiple flags' do
+        let(:args) { ['personal', '-g', '-v'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq ['-g', '-v']
+        end
+      end
+
+      context 'when run with invalid flags' do
+        let(:args) { ['personal', '-a', '-gv'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq []
+        end
       end
     end
 
-    context 'when run in global mode' do
-      let(:args) { ['personal', '-g'] }
-      it 'returns an empty array' do
-        expect(options.flags).to eq ['-g']
+    context 'when long flags are used' do
+      context 'when run in list mode' do
+        let(:args) { ['--list'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq ['--list']
+        end
       end
-    end
 
-    context 'when run with multiple flags' do
-      let(:args) { ['personal', '-g', '-v'] }
-      it 'returns an empty array' do
-        expect(options.flags).to eq ['-g', '-v']
+      context 'when run in global mode' do
+        let(:args) { ['personal', '--global'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq ['--global']
+        end
+      end
+
+      context 'when run with multiple flags' do
+        let(:args) { ['personal', '--global', '--verbose'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq ['--global', '--verbose']
+        end
+      end
+
+      context 'when run with invalid flags' do
+        let(:args) { ['personal', '--foo', '--globalist'] }
+        it 'returns an empty array' do
+          expect(options.flags).to eq []
+        end
       end
     end
 
