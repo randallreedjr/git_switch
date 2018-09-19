@@ -3,10 +3,40 @@ require 'spec_helper'
 RSpec.describe GitSwitch::Options do
   let(:options) { GitSwitch::Options.new(args) }
 
+  describe 'flags' do
+    context 'when run in list mode' do
+      let(:args) { ['-l'] }
+      it 'returns an empty array' do
+        expect(options.flags).to eq ['-l']
+      end
+    end
+
+    context 'when run in global mode' do
+      let(:args) { ['personal', '-g'] }
+      it 'returns an empty array' do
+        expect(options.flags).to eq ['-g']
+      end
+    end
+
+    context 'when run with multiple flags' do
+      let(:args) { ['personal', '-g', '-v'] }
+      it 'returns an empty array' do
+        expect(options.flags).to eq ['-g', '-v']
+      end
+    end
+
+    context 'when run with no flags' do
+      let(:args) { ['personal'] }
+      it 'returns an empty array' do
+        expect(options.flags).to eq []
+      end
+    end
+  end
+
   describe 'valid_args?' do
     let(:expected_error) { "Invalid args\n" }
     context 'when run with a single profile' do
-      let(:args) { ['personal' ] }
+      let(:args) { ['personal'] }
 
       it 'returns true' do
         expect(options.valid_args?).to be true
@@ -14,7 +44,7 @@ RSpec.describe GitSwitch::Options do
     end
 
     context 'when run with a profile and a flag' do
-      let(:args) { ['personal','-g'] }
+      let(:args) { ['personal', '-g'] }
 
       it 'returns true' do
         expect(options.valid_args?).to be true
@@ -22,7 +52,7 @@ RSpec.describe GitSwitch::Options do
     end
 
     context 'when run with a profile and non-profile flag' do
-      let(:args) { ['personal','-l'] }
+      let(:args) { ['personal', '-l'] }
 
       it 'returns false' do
         expect(options.valid_args?).to be false

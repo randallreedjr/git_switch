@@ -5,6 +5,12 @@ module GitSwitch
       @args = args
     end
 
+    def flags
+      @flags ||= args.select do |arg|
+        arg.match /\-[glv]{1}/
+      end
+    end
+
     def valid_args?
       if list? && args.count > 1
         puts "Invalid args"
