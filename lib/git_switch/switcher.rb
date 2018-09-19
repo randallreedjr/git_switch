@@ -66,7 +66,7 @@ module GitSwitch
       puts "\n# => - current" if config.any? {|key, value| value["username"] == current_git_username}
     end
 
-    def print_settings(flag)
+    def print_settings(flag = '')
       if options.verbose?
         puts "\nGit Config:"
         puts `git config #{flag} -l --show-origin | grep user`
