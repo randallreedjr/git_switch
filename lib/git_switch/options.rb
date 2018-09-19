@@ -25,11 +25,15 @@ module GitSwitch
     end
 
     def list?
-      (args.include? '-l') || (args.include? '--list')
+      (flags.include? '-l') || (flags.include? '--list')
     end
 
     def global?
-      (args.include? '-g') || (args.include? '--global')
+      (flags.include? '-g') || (flags.include? '--global')
+    end
+
+    def verbose?
+      (flags.include? '-v') || (flags.include? '--verbose')
     end
 
     private

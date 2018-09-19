@@ -185,4 +185,27 @@ RSpec.describe GitSwitch::Options do
       end
     end
   end
+
+  describe 'verbose?' do
+    context 'when args includes -v' do
+      let(:args) { ['-v'] }
+      it 'returns true' do
+        expect(options.verbose?).to be true
+      end
+    end
+
+    context 'when args includes --verbose' do
+      let(:args) { ['--verbose'] }
+      it 'returns true' do
+        expect(options.verbose?).to be true
+      end
+    end
+
+    context 'when args do not include -v or --verbose' do
+      let(:args) { [] }
+      it 'returns false' do
+        expect(options.verbose?).to be false
+      end
+    end
+  end
 end

@@ -155,7 +155,7 @@ RSpec.describe GitSwitch::Switcher do
           allow(switcher).to receive(:current_git_username).and_return('johnnyfive')
         end
         let(:expected_output) { "=> personal\n   work\n\n# => - current\n" }
-        fit 'indicates the active profile' do
+        it 'indicates the active profile' do
           expect{switcher.print_list}.to output(expected_output).to_stdout
         end
       end

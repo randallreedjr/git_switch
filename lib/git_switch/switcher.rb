@@ -54,6 +54,7 @@ module GitSwitch
 
       set_git_config(flag)
       set_ssh
+      print_settings(flag)
     end
 
     def print_list
@@ -63,6 +64,17 @@ module GitSwitch
       end
       puts profiles
       puts "\n# => - current" if config.any? {|key, value| value["username"] == current_git_username}
+    end
+
+    def print_settings(flag)
+      if options.verbose?
+        puts "\nGit Config:"
+        puts `git config #{flag} -l --show-origin | grep user`
+        puts "\nSSH:"
+        puts `ssh-add -l`
+      else
+        puts "Switched to profile #{profile}"
+      end
     end
 
     private
@@ -93,18 +105,14 @@ module GitSwitch
     end
 
     def set_git_config(flag)
-      puts "\nGit Config:"
       `git config #{flag} user.name "#{name}"`
       `git config #{flag} user.username "#{username}"`
       `git config #{flag} user.email "#{email}"`
-      puts `git config #{flag} -l --show-origin | grep user`
     end
 
     def set_ssh
-      puts "\nSSH:"
       `ssh-add -D`
       `ssh-add #{ssh}`
-      puts `ssh-add -l`
     end
   end
 end
