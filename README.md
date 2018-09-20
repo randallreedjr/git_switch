@@ -46,6 +46,14 @@ Note that currently, invoking `git switch` will remove all identities from `ssh-
 ### Flags
 
 * Use `-l` or `--list` to list configured profiles
+```
+git switch -l
+```
+
+* Use `-v` or `--verbose` to print more detailed output
+```
+git switch personal -v
+```
 
 ## License
 
