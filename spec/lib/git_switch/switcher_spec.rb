@@ -140,6 +140,67 @@ RSpec.describe GitSwitch::Switcher do
     end
   end
 
+  describe '#set!' do
+    before do
+      allow(switcher).to receive(:set_git_config)
+    end
+
+    let(:switcher) { GitSwitch::Switcher.new(['personal']) }
+    context 'when run with -g flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal', '-g']) }
+      it 'calls set_git_config with global flag' do
+        expect(switcher).to receive(:set_git_config).with('--global')
+        switcher.run
+      end
+    end
+
+    context 'when run with --global flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal', '--global']) }
+      it 'calls set_git_config with global flag' do
+        expect(switcher).to receive(:set_git_config).with('--global')
+        switcher.run
+      end
+    end
+
+    it 'calls set_ssh' do
+      expect(switcher).to receive(:set_ssh)
+      switcher.run
+    end
+
+    it 'calls print_settings' do
+      expect(switcher).to receive(:print_settings)
+      switcher.run
+    end
+  end
+
+  describe '#print_settings' do
+    context 'when called with --verbose flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal', '--verbose']) }
+      it 'prints all settings' do
+        expect{switcher.print_settings}.to output(/\nGit Config:/).to_stdout
+        expect{switcher.print_settings}.to output(/\nSSH:/).to_stdout
+      end
+    end
+    context 'when called with -v flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal', '--verbose']) }
+      it 'prints all settings' do
+        expect{switcher.print_settings}.to output(/\nGit Config:/).to_stdout
+        expect{switcher.print_settings}.to output(/\nSSH:/).to_stdout
+      end
+    end
+    context 'when called without --verbose or -v flag' do
+      let(:switcher) { GitSwitch::Switcher.new(['personal']) }
+      it 'does  not print all settings' do
+        expect{switcher.print_settings}.to_not output(/\nGit Config:/).to_stdout
+        expect{switcher.print_settings}.to_not output(/\nSSH:/).to_stdout
+      end
+
+      it 'prints confirmation message' do
+        expect{switcher.print_settings}.to_not output("/nSwitched to profile personal").to_stdout
+      end
+    end
+  end
+
   describe '#print_list' do
     let(:switcher) { GitSwitch::Switcher.new(['-l']) }
     context 'when profiles have been configured' do
@@ -155,7 +216,7 @@ RSpec.describe GitSwitch::Switcher do
           allow(switcher).to receive(:current_git_username).and_return('johnnyfive')
         end
         let(:expected_output) { "=> personal\n   work\n\n# => - current\n" }
-        fit 'indicates the active profile' do
+        it 'indicates the active profile' do
           expect{switcher.print_list}.to output(expected_output).to_stdout
         end
       end

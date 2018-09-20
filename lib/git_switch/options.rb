@@ -5,6 +5,13 @@ module GitSwitch
       @args = args
     end
 
+    def flags
+      @flags ||= args.select do |arg|
+        arg.match(/\A\-[glv]{1}\z/) ||
+          arg.match(/\A\-\-(global|list|verbose){1}\z/)
+      end
+    end
+
     def valid_args?
       if list? && args.count > 1
         puts "Invalid args"
@@ -18,11 +25,15 @@ module GitSwitch
     end
 
     def list?
-      (args.include? '-l') || (args.include? '--list')
+      (flags.include? '-l') || (flags.include? '--list')
     end
 
     def global?
-      (args.include? '-g') || (args.include? '--global')
+      (flags.include? '-g') || (flags.include? '--global')
+    end
+
+    def verbose?
+      (flags.include? '-v') || (flags.include? '--verbose')
     end
 
     private
