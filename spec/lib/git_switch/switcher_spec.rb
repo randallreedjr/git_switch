@@ -207,17 +207,27 @@ RSpec.describe GitSwitch::Switcher do
       end
     end
 
-    context 'when GitHelper returns false' do
-      let(:expected_error) { "Not a git repo. Please run from a git repo or run with `-g` to update global settings.\n" }
+    context 'when GitHelper returns nil' do
       before do
         allow(GitSwitch::GitHelper).to receive(:git_repo?).and_return(nil)
       end
-      it 'returns false' do
-        expect(switcher.git_repo?).to be false
+
+      context 'when run with global flag' do
+        let(:switcher) { GitSwitch::Switcher.new(['personal','-g']) }
+        it 'returns true' do
+          expect(switcher.git_repo?).to be true
+        end
       end
 
-      it 'prints error message' do
-        expect{switcher.git_repo?}.to output(expected_error).to_stdout
+      context 'when run without global flag' do
+        let(:expected_error) { "Not a git repo. Please run from a git repo or run with `-g` to update global settings.\n" }
+        it 'returns false' do
+          expect(switcher.git_repo?).to be false
+        end
+
+        it 'prints error message' do
+          expect{switcher.git_repo?}.to output(expected_error).to_stdout
+        end
       end
     end
   end
