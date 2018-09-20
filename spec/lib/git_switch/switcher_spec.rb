@@ -190,9 +190,13 @@ RSpec.describe GitSwitch::Switcher do
     end
     context 'when called without --verbose or -v flag' do
       let(:switcher) { GitSwitch::Switcher.new(['personal']) }
-      it 'prints all settings' do
+      it 'does  not print all settings' do
         expect{switcher.print_settings}.to_not output(/\nGit Config:/).to_stdout
         expect{switcher.print_settings}.to_not output(/\nSSH:/).to_stdout
+      end
+
+      it 'prints confirmation message' do
+        expect{switcher.print_settings}.to_not output("/nSwitched to profile personal").to_stdout
       end
     end
   end
