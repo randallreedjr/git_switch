@@ -98,6 +98,14 @@ RSpec.describe GitSwitch::Switcher do
   end
 
   describe '#run' do
+    context 'with no args' do
+      let(:switcher) { GitSwitch::Switcher.new([]) }
+      it 'calls print_usage' do
+        expect(switcher).to receive(:print_usage)
+        switcher.run
+      end
+    end
+
     context 'in list mode' do
       let(:switcher) { GitSwitch::Switcher.new(['-l']) }
       it 'calls print_list' do
@@ -142,10 +150,12 @@ RSpec.describe GitSwitch::Switcher do
 
   describe '#set!' do
     before do
-      allow(switcher).to receive(:set_git_config)
+      allow(switcher).to receive(:set_git_config) {}
+      allow(switcher).to receive(:set_ssh) {}
     end
 
     let(:switcher) { GitSwitch::Switcher.new(['personal']) }
+
     context 'when run with -g flag' do
       let(:switcher) { GitSwitch::Switcher.new(['personal', '-g']) }
       it 'calls set_git_config with global flag' do
@@ -233,6 +243,31 @@ RSpec.describe GitSwitch::Switcher do
       it 'outputs an empty string' do
         expect{switcher.print_list}.to output(expected_output).to_stdout
       end
+    end
+  end
+
+  describe '#print_usage' do
+    let(:switcher) { GitSwitch::Switcher.new([]) }
+    let(:expected_output) do
+      <<~USAGE
+      usage: git switch [-l | --list] <profile> [-v | --verbose] [-g | --global]
+
+      switch to a profile for local development only
+      git switch <profile>
+
+      switch to a profile globally
+      git switch -g <profile>
+
+      switch to a profile and see all output
+      git switch -v <profile>
+
+      see available profiles
+      git switch -l
+      USAGE
+    end
+
+    it 'outputs usage details' do
+      expect{switcher.print_usage}.to output(expected_output).to_stdout
     end
   end
 
