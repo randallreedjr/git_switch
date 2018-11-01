@@ -13,7 +13,17 @@ module GitSwitch
     end
 
     def run
-      list? ? print_list : set!
+      if usage?
+        print_usage
+      elsif list?
+        print_list
+      else
+        set!
+      end
+    end
+
+    def usage?
+      options.usage?
     end
 
     def list?
@@ -66,6 +76,10 @@ module GitSwitch
       puts "\n# => - current" if config.any? {|key, value| value["username"] == current_git_username}
     end
 
+    def print_usage
+      puts usage
+    end
+
     def print_settings(flag = '')
       if options.verbose?
         puts "\nGit Config:"
@@ -113,6 +127,24 @@ module GitSwitch
     def set_ssh
       `ssh-add -D`
       `ssh-add #{ssh}`
+    end
+
+    def usage
+      <<~USAGE
+      usage: git switch [-l | --list] <profile> [-v | --verbose] [-g | --global]
+
+      switch to a profile for local development only
+      git switch <profile>
+
+      switch to a profile globally
+      git switch -g <profile>
+
+      switch to a profile and see all output
+      git switch -v <profile>
+
+      see available profiles
+      git switch -l
+      USAGE
     end
   end
 end

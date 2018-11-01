@@ -18,10 +18,16 @@ module GitSwitch
         return false
       elsif no_flags?(args) || one_flag?(args)
         return true
+      elsif usage?
+        return true
       else
         puts "Invalid args"
         return false
       end
+    end
+
+    def usage?
+      args.count == 0
     end
 
     def list?

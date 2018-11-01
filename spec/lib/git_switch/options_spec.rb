@@ -74,6 +74,7 @@ RSpec.describe GitSwitch::Options do
 
   describe 'valid_args?' do
     let(:expected_error) { "Invalid args\n" }
+
     context 'when run with a single profile' do
       let(:args) { ['personal'] }
 
@@ -130,12 +131,24 @@ RSpec.describe GitSwitch::Options do
     context 'when run with no args' do
       let(:args) { [] }
 
-      it 'returns false' do
-        expect(options.valid_args?).to be false
+      it 'returns true' do
+        expect(options.valid_args?).to be true
       end
+    end
+  end
 
-      it 'prints error message' do
-        expect{options.valid_args?}.to output(expected_error).to_stdout
+  describe 'usage?' do
+    context 'when there are no args' do
+      let(:args) { [] }
+      it 'returns true' do
+        expect(options.usage?).to be true
+      end
+    end
+
+    context 'when there are args' do
+      let(:args) { ['foo'] }
+      it 'returns false' do
+        expect(options.usage?).to be false
       end
     end
   end
