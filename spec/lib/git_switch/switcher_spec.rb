@@ -109,7 +109,7 @@ RSpec.describe GitSwitch::Switcher do
     context 'in list mode' do
       let(:switcher) { GitSwitch::Switcher.new(['-l']) }
       it 'calls print_list' do
-        expect(switcher).to receive(:print_list)
+        expect(switcher.config).to receive(:print_list)
         switcher.run
       end
     end
@@ -129,7 +129,7 @@ RSpec.describe GitSwitch::Switcher do
       end
 
       it 'checks for valid profile' do
-        expect(switcher).to receive(:valid_profile?)
+        expect(switcher.config).to receive(:valid_profile?)
         switcher.run
       end
 
@@ -211,41 +211,6 @@ RSpec.describe GitSwitch::Switcher do
     end
   end
 
-  describe '#print_list' do
-    let(:switcher) { GitSwitch::Switcher.new(['-l']) }
-    context 'when profiles have been configured' do
-      context 'when no profiles are active' do
-        let(:expected_output) { "   personal\n   work\n" }
-        it 'outputs available profiles' do
-          expect{switcher.print_list}.to output(expected_output).to_stdout
-        end
-      end
-
-      context 'when a profile is active' do
-        before do
-          allow(switcher).to receive(:current_git_username).and_return('johnnyfive')
-        end
-        let(:expected_output) { "=> personal\n   work\n\n# => - current\n" }
-        it 'indicates the active profile' do
-          expect{switcher.print_list}.to output(expected_output).to_stdout
-        end
-      end
-    end
-
-    context 'when no profiles have been configured' do
-      let(:expected_output) { '' }
-      before do
-        # unstub
-        allow(File).to receive(:expand_path).and_call_original
-        allow(File).to receive(:expand_path).and_return(File.expand_path('spec/fixtures/.empty'))
-      end
-
-      it 'outputs an empty string' do
-        expect{switcher.print_list}.to output(expected_output).to_stdout
-      end
-    end
-  end
-
   describe '#print_usage' do
     let(:switcher) { GitSwitch::Switcher.new([]) }
     let(:expected_output) do
@@ -268,27 +233,6 @@ RSpec.describe GitSwitch::Switcher do
 
     it 'outputs usage details' do
       expect{switcher.print_usage}.to output(expected_output).to_stdout
-    end
-  end
-
-  describe 'valid_profile?' do
-    context 'when profile is configured' do
-      let(:switcher) { GitSwitch::Switcher.new(['personal']) }
-      it 'returns true' do
-        expect(switcher.valid_profile?).to be true
-      end
-    end
-
-    context 'when profile is not configured' do
-      let(:switcher) { GitSwitch::Switcher.new(['foo']) }
-      let(:expected_output) { "Profile 'foo' not found!\n" }
-      it 'returns false' do
-        expect(switcher.valid_profile?).to be false
-      end
-
-      it 'prints error message' do
-        expect{switcher.valid_profile?}.to output(expected_output).to_stdout
-      end
     end
   end
 
