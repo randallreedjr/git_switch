@@ -1,19 +1,47 @@
-require 'yaml'
 require_relative './version'
 
 module GitSwitch
   class Switcher
-    attr_reader :config, :profile, :options
+    attr_reader :config, :options
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
-      @config = load_config
       @options = GitSwitch::Options.new(args)
-      @profile = get_profile(args)
+      @config = GitSwitch::Config.new(args)
     end
 
     def run
-      list? ? print_list : set!
+      if usage?
+        print_usage
+      elsif list?
+        print_list
+      else
+        set!
+      end
+    end
+
+    def profile
+      config.profile
+    end
+
+    def name
+      config.name
+    end
+
+    def username
+      config.username
+    end
+
+    def email
+      config.email
+    end
+
+    def ssh
+      config.ssh
+    end
+
+    def usage?
+      options.usage?
     end
 
     def list?
@@ -24,19 +52,6 @@ module GitSwitch
       options.global?
     end
 
-    def get_profile(args)
-      args.detect {|a| !a.start_with? '-'}
-    end
-
-    def valid_profile?
-      if config.has_key?(profile)
-        return true
-      else
-        puts "Profile '#{profile}' not found!"
-        return false
-      end
-    end
-
     def git_repo?
       if GitHelper.git_repo? || global?
         return true
@@ -44,6 +59,10 @@ module GitSwitch
         puts "Not a git repo. Please run from a git repo or run with `-g` to update global settings."
         return false
       end
+    end
+
+    def valid_profile?
+      config.valid_profile?
     end
 
     def set!
@@ -57,13 +76,12 @@ module GitSwitch
       print_settings(flag)
     end
 
+    def print_usage
+      puts usage
+    end
+
     def print_list
-      profiles = config.map do |key, value|
-        prefix = value["username"] == current_git_username ? "=>" : "  "
-        "#{prefix} #{key}"
-      end
-      puts profiles
-      puts "\n# => - current" if config.any? {|key, value| value["username"] == current_git_username}
+      config.print_list
     end
 
     def print_settings(flag = '')
@@ -79,31 +97,6 @@ module GitSwitch
 
     private
 
-    def load_config
-      # TODO: RCR - Handle missing or empty config file
-      YAML.load_file(File.expand_path('~/.gitswitch')) || {}
-    end
-
-    def current_git_username
-      `git config user.username`.chomp
-    end
-
-    def name
-      config[profile]["name"]
-    end
-
-    def username
-      config[profile]["username"]
-    end
-
-    def email
-      config[profile]["email"]
-    end
-
-    def ssh
-      config[profile]["ssh"]
-    end
-
     def set_git_config(flag)
       `git config #{flag} user.name "#{name}"`
       `git config #{flag} user.username "#{username}"`
@@ -113,6 +106,24 @@ module GitSwitch
     def set_ssh
       `ssh-add -D`
       `ssh-add #{ssh}`
+    end
+
+    def usage
+      <<~USAGE
+      usage: git switch [-l | --list] <profile> [-v | --verbose] [-g | --global]
+
+      switch to a profile for local development only
+      git switch <profile>
+
+      switch to a profile globally
+      git switch -g <profile>
+
+      switch to a profile and see all output
+      git switch -v <profile>
+
+      see available profiles
+      git switch -l
+      USAGE
     end
   end
 end
