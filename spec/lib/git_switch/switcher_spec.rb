@@ -215,19 +215,20 @@ RSpec.describe GitSwitch::Switcher do
     let(:switcher) { GitSwitch::Switcher.new([]) }
     let(:expected_output) do
       <<~USAGE
-      usage: git switch [-l | --list] <profile> [-v | --verbose] [-g | --global]
+      usage: git switch [-l | --list]
+                        <profile> [-v | --verbose] [-g | --global]
 
       switch to a profile for local development only
-      git switch <profile>
+          git switch <profile>
 
       switch to a profile globally
-      git switch -g <profile>
+          git switch -g <profile>
 
       switch to a profile and see all output
-      git switch -v <profile>
+          git switch -v <profile>
 
       see available profiles
-      git switch -l
+          git switch -l
       USAGE
     end
 

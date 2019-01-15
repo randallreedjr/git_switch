@@ -145,8 +145,15 @@ RSpec.describe GitSwitch::Options do
       end
     end
 
-    context 'when there are args' do
+    context 'with a profile' do
       let(:args) { ['foo'] }
+      it 'returns false' do
+        expect(options.usage?).to be false
+      end
+    end
+
+    context 'with a flag' do
+      let(:args) { ['-l'] }
       it 'returns false' do
         expect(options.usage?).to be false
       end
