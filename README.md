@@ -9,7 +9,15 @@ Git Switch is a command line utility to easily switch between multiple git profi
 
 This gem is not intended to be installed via a Gemfile. Instead, install it yourself:
 
-    $ gem install git_switch
+```
+$ gem install git_switch
+```
+
+If you use rvm, you can save yourself from some headaches by installing git_switch for all gemsets.
+
+```
+$ rvm @global do gem install git_switch
+```
 
 ## Configuration
 
