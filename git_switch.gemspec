@@ -6,6 +6,7 @@ require "git_switch/version"
 Gem::Specification.new do |spec|
   spec.name          = "git_switch"
   spec.version       = GitSwitch::VERSION
+  spec.platform      = Gem::Platform::RUBY
   spec.authors       = ["Randall Reed, Jr."]
   spec.email         = ["randallreedjr@gmail.com"]
 
@@ -27,8 +28,11 @@ Gem::Specification.new do |spec|
   spec.executables   << 'git-switch'
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "activesupport", "~> 5.2.2"
+
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4.1"
+  spec.add_development_dependency "pry"
 end

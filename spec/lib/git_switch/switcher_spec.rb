@@ -53,45 +53,89 @@ RSpec.describe GitSwitch::Switcher do
     end
   end
 
+  describe '#config?' do
+    context 'when -c is passed as only argument' do
+      it 'returns true' do
+        expect(GitSwitch::Switcher.new(['-c']).config?).to be true
+      end
+    end
+
+    context 'when -c is passed as first argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['-c','foo']).config?).to be false
+      end
+    end
+
+    context 'when -c is passed as second argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo','-c']).config?).to be false
+      end
+    end
+
+    context 'when --config is passed as only argument' do
+      it 'returns true' do
+        expect(GitSwitch::Switcher.new(['--config']).config?).to be true
+      end
+    end
+
+    context 'when --config is passsed as first argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['--config', 'foo']).config?).to be false
+      end
+    end
+
+    context 'when --config is passsed as second argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo','--config']).config?).to be false
+      end
+    end
+
+    context 'when no flag is passed' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo']).config?).to be false
+      end
+    end
+  end
+
   describe '#list?' do
     context 'when -l is passed as only argument' do
-      it 'sets to true' do
+      it 'returns true' do
         expect(GitSwitch::Switcher.new(['-l']).list?).to be true
       end
     end
 
     context 'when -l is passed as first argument' do
-      it 'sets to true' do
-        expect(GitSwitch::Switcher.new(['-l','foo']).list?).to be true
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['-l','foo']).list?).to be false
       end
     end
 
     context 'when -l is passed as second argument' do
-      it 'sets to true' do
-        expect(GitSwitch::Switcher.new(['foo','-l']).list?).to be true
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo','-l']).list?).to be false
       end
     end
 
     context 'when --list is passed as only argument' do
-      it 'sets to true' do
-        expect(GitSwitch::Switcher.new(['-l']).list?).to be true
-      end
-    end
-
-    context 'when --list is passsed as first argument' do
-      it 'sets to true' do
+      it 'returns true' do
         expect(GitSwitch::Switcher.new(['--list']).list?).to be true
       end
     end
 
+    context 'when --list is passsed as first argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['--list', 'foo']).list?).to be false
+      end
+    end
+
     context 'when --list is passsed as second argument' do
-      it 'sets to true' do
-        expect(GitSwitch::Switcher.new(['foo','--list']).list?).to be true
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo','--list']).list?).to be false
       end
     end
 
     context 'when no flag is passed' do
-      it 'sets to false' do
+      it 'returns false' do
         expect(GitSwitch::Switcher.new(['foo']).list?).to be false
       end
     end
@@ -106,9 +150,19 @@ RSpec.describe GitSwitch::Switcher do
       end
     end
 
+    context 'in config mode' do
+      let(:switcher) { GitSwitch::Switcher.new(['-c']) }
+      it 'calls configure' do
+        expect(switcher).to receive(:configure!).and_call_original
+        expect(switcher.config).to receive(:configure!)
+        switcher.run
+      end
+    end
+
     context 'in list mode' do
       let(:switcher) { GitSwitch::Switcher.new(['-l']) }
       it 'calls print_list' do
+        expect(switcher).to receive(:print_list).and_call_original
         expect(switcher.config).to receive(:print_list)
         switcher.run
       end
@@ -215,8 +269,11 @@ RSpec.describe GitSwitch::Switcher do
     let(:switcher) { GitSwitch::Switcher.new([]) }
     let(:expected_output) do
       <<~USAGE
-      usage: git switch [-l | --list]
+      usage: git switch [-l | --list] [-c | --config]
                         <profile> [-v | --verbose] [-g | --global]
+
+      configure profiles
+          git switch -c
 
       switch to a profile for local development only
           git switch <profile>

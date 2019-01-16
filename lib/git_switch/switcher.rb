@@ -1,8 +1,11 @@
 require_relative './version'
+require 'active_support/core_ext/module/delegation'
 
 module GitSwitch
   class Switcher
     attr_reader :config, :options
+    delegate :usage?, :config?, :list?, :global?, to: :options
+    delegate :profile, :name, :username, :email, :ssh, :print_list, :configure!, :valid_profile?, to: :config
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
@@ -11,45 +14,16 @@ module GitSwitch
     end
 
     def run
+      return unless options.valid_args?
       if usage?
         print_usage
+      elsif config?
+        configure!
       elsif list?
         print_list
       else
         set!
       end
-    end
-
-    def profile
-      config.profile
-    end
-
-    def name
-      config.name
-    end
-
-    def username
-      config.username
-    end
-
-    def email
-      config.email
-    end
-
-    def ssh
-      config.ssh
-    end
-
-    def usage?
-      options.usage?
-    end
-
-    def list?
-      options.list?
-    end
-
-    def global?
-      options.global?
     end
 
     def git_repo?
@@ -61,13 +35,8 @@ module GitSwitch
       end
     end
 
-    def valid_profile?
-      config.valid_profile?
-    end
-
     def set!
-      return unless options.valid_args? && valid_profile?
-      return unless git_repo?
+      return unless valid_profile? && git_repo?
 
       flag = global? ? '--global' : ''
 
@@ -78,10 +47,6 @@ module GitSwitch
 
     def print_usage
       puts usage
-    end
-
-    def print_list
-      config.print_list
     end
 
     def print_settings(flag = '')
@@ -110,8 +75,11 @@ module GitSwitch
 
     def usage
       <<~USAGE
-      usage: git switch [-l | --list]
+      usage: git switch [-l | --list] [-c | --config]
                         <profile> [-v | --verbose] [-g | --global]
+
+      configure profiles
+          git switch -c
 
       switch to a profile for local development only
           git switch <profile>
