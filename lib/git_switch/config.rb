@@ -13,10 +13,6 @@ module GitSwitch
       args.detect {|a| !a.start_with? '-'}
     end
 
-    def name
-      profiles[selected_profile]["name"]
-    end
-
     def username
       profiles[selected_profile]["username"]
     end
@@ -25,8 +21,16 @@ module GitSwitch
       profiles[selected_profile]["email"]
     end
 
+    def name
+      profiles[selected_profile]["name"]
+    end
+
     def ssh
       profiles[selected_profile]["ssh"]
+    end
+
+    def ssh_command
+      "ssh -i #{ssh}"
     end
 
     def profile

@@ -1,6 +1,40 @@
 require 'spec_helper'
 
 RSpec.describe GitSwitch::Config do
+  describe 'profile attributes' do
+    let(:config) { GitSwitch::Config.new(['personal']) }
+
+    describe '#username' do
+      it 'returns the username for the selected profile' do
+        expect(config.username).to eq 'johnnyfive'
+      end
+    end
+
+    describe '#email' do
+      it 'returns the email for the selected profile' do
+        expect(config.email).to eq 'me@johnsmith.com'
+      end
+    end
+
+    describe '#name' do
+      it 'returns the name for the selected profile' do
+        expect(config.name).to eq 'Johnny Smith'
+      end
+    end
+
+    describe '#ssh' do
+      it 'returns the ssh path for the selected profile' do
+        expect(config.ssh).to eq '~/.ssh/id_rsa'
+      end
+    end
+
+    describe '#ssh_command' do
+      it 'returns the ssh command for the selected profile' do
+        expect(config.ssh_command).to eq 'ssh -i ~/.ssh/id_rsa'
+      end
+    end
+  end
+
   describe 'valid_profile?' do
     context 'when profile is configured' do
       let(:config) { GitSwitch::Config.new(['personal']) }
