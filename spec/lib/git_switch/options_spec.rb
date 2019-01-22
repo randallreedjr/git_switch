@@ -19,6 +19,20 @@ RSpec.describe GitSwitch::Options do
         end
       end
 
+      context 'when run in version mode' do
+        let(:args) { ['-v'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['-v']
+        end
+      end
+
+      context 'when run in verbose mode' do
+        let(:args) { ['-v', 'personal'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['-v']
+        end
+      end
+
       context 'when run in global mode' do
         let(:args) { ['personal', '-g'] }
         it 'returns an array of the flags' do
@@ -53,6 +67,20 @@ RSpec.describe GitSwitch::Options do
         let(:args) { ['--list'] }
         it 'returns an array of the flags' do
           expect(options.flags).to eq ['--list']
+        end
+      end
+
+      context 'when run in version mode' do
+        let(:args) { ['--version'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['--version']
+        end
+      end
+
+      context 'when run in verbose mode' do
+        let(:args) { ['--verbose', 'personal'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['--verbose']
         end
       end
 
@@ -117,6 +145,14 @@ RSpec.describe GitSwitch::Options do
       end
     end
 
+    context 'when run with config flag' do
+      let(:args) { ['-c'] }
+
+      it 'returns true' do
+        expect(options.valid_args?).to be true
+      end
+    end
+
     context 'when run with list flag' do
       let(:args) { ['-l'] }
 
@@ -125,11 +161,43 @@ RSpec.describe GitSwitch::Options do
       end
     end
 
-    context 'when run with config flag' do
-      let(:args) { ['-c'] }
+    context 'when run with version flag' do
+      let(:args) { ['-v'] }
 
       it 'returns true' do
         expect(options.valid_args?).to be true
+      end
+    end
+
+    context 'when run with version flag with profile' do
+      let(:args) { ['--version', 'personal'] }
+
+      it 'returns false' do
+        expect(options.valid_args?).to be false
+      end
+
+      it 'prints error message' do
+        expect{options.valid_args?}.to output(expected_error).to_stdout
+      end
+    end
+
+    context 'when run with verbose flag with profile' do
+      let(:args) { ['-v', 'personal'] }
+
+      it 'returns true' do
+        expect(options.valid_args?).to be true
+      end
+    end
+
+    context 'when run with verbose flag without profile' do
+      let(:args) { ['--verbose'] }
+
+      it 'returns false' do
+        expect(options.valid_args?).to be false
+      end
+
+      it 'prints error message' do
+        expect{options.valid_args?}.to output(expected_error).to_stdout
       end
     end
 
@@ -250,6 +318,80 @@ RSpec.describe GitSwitch::Options do
     end
   end
 
+  describe 'version?' do
+    context 'when args includes -v' do
+      let(:args) { ['-v'] }
+      it 'returns true' do
+        expect(options.version?).to be true
+      end
+    end
+
+    context 'when args includes --version' do
+      let(:args) { ['--version'] }
+      it 'returns true' do
+        expect(options.version?).to be true
+      end
+    end
+
+    context 'when args include -v and a profile' do
+      let(:args) { ['-v', 'personal'] }
+      it 'returns false' do
+        expect(options.version?).to be false
+      end
+    end
+
+    context 'when args include --version and a profile' do
+      let(:args) { ['--version', 'personal'] }
+      it 'returns false' do
+        expect(options.version?).to be false
+      end
+    end
+
+    context 'when args do not include -v or --version' do
+      let(:args) { [] }
+      it 'returns false' do
+        expect(options.version?).to be false
+      end
+    end
+  end
+
+  describe 'verbose?' do
+    context 'when args includes -v' do
+      let(:args) { ['-v', 'personal'] }
+      it 'returns true' do
+        expect(options.verbose?).to be true
+      end
+    end
+
+    context 'when args includes --verbose' do
+      let(:args) { ['--verbose', 'personal'] }
+      it 'returns true' do
+        expect(options.verbose?).to be true
+      end
+    end
+
+    context 'when args include -v and no profile' do
+      let(:args) { ['-v'] }
+      it 'returns false' do
+        expect(options.verbose?).to be false
+      end
+    end
+
+    context 'when args include --verbose and no profile' do
+      let(:args) { ['--verbose'] }
+      it 'returns false' do
+        expect(options.verbose?).to be false
+      end
+    end
+
+    context 'when args do not include -v or --version' do
+      let(:args) { [] }
+      it 'returns false' do
+        expect(options.version?).to be false
+      end
+    end
+  end
+
   describe 'global?' do
     context 'when args includes -g' do
       let(:args) { ['-g'] }
@@ -275,14 +417,14 @@ RSpec.describe GitSwitch::Options do
 
   describe 'verbose?' do
     context 'when args includes -v' do
-      let(:args) { ['-v'] }
+      let(:args) { ['-v', 'personal'] }
       it 'returns true' do
         expect(options.verbose?).to be true
       end
     end
 
     context 'when args includes --verbose' do
-      let(:args) { ['--verbose'] }
+      let(:args) { ['--verbose', 'personal'] }
       it 'returns true' do
         expect(options.verbose?).to be true
       end

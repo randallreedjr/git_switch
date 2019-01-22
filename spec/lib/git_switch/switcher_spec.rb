@@ -168,6 +168,14 @@ RSpec.describe GitSwitch::Switcher do
       end
     end
 
+    context 'in version mode' do
+      let(:switcher) { GitSwitch::Switcher.new(['-v']) }
+      it 'calls print_version' do
+        expect(switcher).to receive(:print_version)
+        switcher.run
+      end
+    end
+
     context 'in set mode' do
       let(:switcher) { GitSwitch::Switcher.new(['personal']) }
       let(:options) { switcher.options }
@@ -258,7 +266,7 @@ RSpec.describe GitSwitch::Switcher do
     let(:switcher) { GitSwitch::Switcher.new([]) }
     let(:expected_output) do
       <<~USAGE
-      usage: git switch [-l | --list] [-c | --config]
+      usage: git switch [-c | --config] [-l | --list] [-v | --version]
                         <profile> [-v | --verbose] [-g | --global]
 
       configure profiles
@@ -275,11 +283,23 @@ RSpec.describe GitSwitch::Switcher do
 
       see available profiles
           git switch -l
+
+      view installed gem version
+          git switch -v
       USAGE
     end
 
     it 'outputs usage details' do
       expect{switcher.print_usage}.to output(expected_output).to_stdout
+    end
+  end
+
+  describe '#print_version' do
+    let(:switcher) { GitSwitch::Switcher.new(['-v']) }
+    let(:expected_output) { "#{GitSwitch::VERSION}\n" }
+
+    it 'outputs usage details' do
+      expect{switcher.print_version}.to output(expected_output).to_stdout
     end
   end
 

@@ -4,7 +4,7 @@ require 'active_support/core_ext/module/delegation'
 module GitSwitch
   class Switcher
     attr_reader :config, :options
-    delegate :usage?, :config?, :list?, :global?, to: :options
+    delegate :usage?, :config?, :list?, :version?, :global?, to: :options
     delegate :profile, :name, :username, :email, :ssh, :ssh_command, :print_list, :configure!, :valid_profile?, to: :config
 
     def initialize(args)
@@ -21,6 +21,8 @@ module GitSwitch
         configure!
       elsif list?
         print_list
+      elsif version?
+        print_version
       else
         set!
       end
@@ -45,6 +47,10 @@ module GitSwitch
 
     def print_usage
       puts usage
+    end
+
+    def print_version
+      puts GitSwitch::VERSION
     end
 
     def print_settings
@@ -77,7 +83,7 @@ module GitSwitch
 
     def usage
       <<~USAGE
-      usage: git switch [-l | --list] [-c | --config]
+      usage: git switch [-c | --config] [-l | --list] [-v | --version]
                         <profile> [-v | --verbose] [-g | --global]
 
       configure profiles
@@ -94,6 +100,9 @@ module GitSwitch
 
       see available profiles
           git switch -l
+
+      view installed gem version
+          git switch -v
       USAGE
     end
   end
