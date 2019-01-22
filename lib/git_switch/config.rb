@@ -42,6 +42,63 @@ module GitSwitch
       end
     end
 
+    def configure!
+      @profiles = build_profiles
+      write_profiles_to_config_file if @profiles.any?
+    end
+
+    def build_profiles
+      puts "How many profiles would you like to create?"
+      profile_count = STDIN.gets.chomp.to_i
+      profiles = Array.new(profile_count, {})
+      current = 1
+      profiles.map do |profile|
+        puts "\n#{ordinal(current)} profile name (e.g. 'work' or 'personal'):"
+        profile[:profile_name] = STDIN.gets.chomp
+        puts "Git username for #{profile[:profile_name]}:"
+        profile[:git_username] = STDIN.gets.chomp
+        puts "Git email for #{profile[:profile_name]}:"
+        profile[:git_email] = STDIN.gets.chomp
+        puts "Git name for #{profile[:profile_name]}:"
+        profile[:git_name] = STDIN.gets.chomp
+        puts "Path to ssh key for #{profile[:profile_name]} (e.g. '~/.ssh/id_rsa'):"
+        profile[:ssh_key] = STDIN.gets.chomp
+
+        current +=1
+        profile.dup
+      end
+    rescue Interrupt
+      return {}
+    end
+
+    def ordinal(number)
+      # Source: https://github.com/infertux/ordinalize_full
+      abs_number = number.abs
+      suffix = if (11..13).cover?(abs_number % 100)
+        "th"
+      else
+        case abs_number % 10
+        when 1 then "st"
+        when 2 then "nd"
+        when 3 then "rd"
+        else "th"
+        end
+      end
+      "#{abs_number}#{suffix}"
+    end
+
+    def write_profiles_to_config_file
+      File.open(File.expand_path('~/.gitswitch'), 'w') do |file|
+        profiles.each do |profile|
+          file.write "#{profile[:profile_name]}:\n"
+          file.write "  username: #{profile[:git_username]}\n"
+          file.write "  email: #{profile[:git_email]}\n"
+          file.write "  name: #{profile[:git_name]}\n"
+          file.write "  ssh: #{profile[:ssh_key]}\n"
+        end
+      end
+    end
+
     def print_list
       profiles = @profiles.map do |key, value|
         prefix = value["username"] == current_git_username ? "=>" : "  "

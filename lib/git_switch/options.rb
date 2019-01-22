@@ -7,16 +7,19 @@ module GitSwitch
 
     def flags
       @flags ||= args.select do |arg|
-        arg.match(/\A\-[glv]{1}\z/) ||
-          arg.match(/\A\-\-(global|list|verbose){1}\z/)
+        arg.match(/\A\-[cglv]{1}\z/) ||
+          arg.match(/\A\-\-(config|global|list|verbose){1}\z/)
       end
     end
 
     def valid_args?
-      if list? && args.count > 1
-        puts "Invalid args"
-        return false
-      elsif no_flags?(args) || one_flag?(args)
+      if config_flag? && args.count == 1
+        return true
+      elsif list_flag? && args.count == 1
+        return true
+      elsif no_flags?
+        return true
+      elsif one_flag? && !flag_only?
         return true
       elsif usage?
         return true
@@ -30,8 +33,12 @@ module GitSwitch
       args.count == 0
     end
 
+    def config?
+      config_flag? && args.count == 1
+    end
+
     def list?
-      (flags.include? '-l') || (flags.include? '--list')
+      list_flag? && args.count == 1
     end
 
     def global?
@@ -44,12 +51,24 @@ module GitSwitch
 
     private
 
-    def no_flags?(args)
+    def list_flag?
+      (flags.include? '-l') || (flags.include? '--list')
+    end
+
+    def config_flag?
+      (flags.include? '-c') || (flags.include? '--config')
+    end
+
+    def no_flags?
       args.length == 1 && flag_count(args) == 0
     end
 
-    def one_flag?(args)
+    def one_flag?
       args.length == 2 && flag_count(args) == 1
+    end
+
+    def flag_only?
+      list_flag? || config_flag?
     end
 
     def flag_count(args)
