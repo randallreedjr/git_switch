@@ -5,6 +5,12 @@
 
 Git Switch is a command line utility to easily switch between multiple git profiles. It uses a `.gitswitch` YAML file to configure each profile (name, username, and email) and ssh key.
 
+## Prerequisites
+
+This gem has been developed for, and only tested on, Mac OS.
+
+Additionally, it requires git version 2.10+. Run `git --version` to check your currently install version. If you are using homebrew, you can install a newer version of git with `brew upgrade git`.
+
 ## Installation
 
 This gem is not intended to be installed via a Gemfile. Instead, install it yourself:
