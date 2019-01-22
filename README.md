@@ -9,11 +9,21 @@ Git Switch is a command line utility to easily switch between multiple git profi
 
 This gem is not intended to be installed via a Gemfile. Instead, install it yourself:
 
-    $ gem install git_switch
+```
+$ gem install git_switch
+```
+
+If you use rvm, you can save yourself from some headaches by installing git_switch for all gemsets.
+
+```
+$ rvm @global do gem install git_switch
+```
 
 ## Configuration
 
-Although a guided setup is planned, for now you must manually create your configuration at `~/.gitswitch`. The config file is in YAML format. Here is an example.
+To run the guided setup, use `git switch --config`.
+
+You may also manually create or edit your configuration at `~/.gitswitch`. The config file is in YAML format. Here is an example.
 
 ```
 personal:
@@ -34,7 +44,7 @@ The root keys can be any nickname you want. It should be memorable to make it ea
 
 ## Usage
 
-Git Switch follows the convention to create a custom git command. It can be invoked as follows, to either set your git profile locally or globally:
+Git Switch follows the convention to create a custom git command. It can be invoked as follows, to either set your git profile locally (no flag) or globally (`-g`):
 
 ```
 $ git switch personal

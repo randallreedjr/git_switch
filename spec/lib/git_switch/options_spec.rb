@@ -5,23 +5,30 @@ RSpec.describe GitSwitch::Options do
 
   describe 'flags' do
     context 'when short flags are used' do
+      context 'when run in config mode' do
+        let(:args) { ['-c'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['-c']
+        end
+      end
+
       context 'when run in list mode' do
         let(:args) { ['-l'] }
-        it 'returns an empty array' do
+        it 'returns an array of the flags' do
           expect(options.flags).to eq ['-l']
         end
       end
 
       context 'when run in global mode' do
         let(:args) { ['personal', '-g'] }
-        it 'returns an empty array' do
+        it 'returns an array of the flags' do
           expect(options.flags).to eq ['-g']
         end
       end
 
       context 'when run with multiple flags' do
         let(:args) { ['personal', '-g', '-v'] }
-        it 'returns an empty array' do
+        it 'returns an array of the flags' do
           expect(options.flags).to eq ['-g', '-v']
         end
       end
@@ -35,23 +42,30 @@ RSpec.describe GitSwitch::Options do
     end
 
     context 'when long flags are used' do
+      context 'when run in config mode' do
+        let(:args) { ['--config'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['--config']
+        end
+      end
+
       context 'when run in list mode' do
         let(:args) { ['--list'] }
-        it 'returns an empty array' do
+        it 'returns an array of the flags' do
           expect(options.flags).to eq ['--list']
         end
       end
 
       context 'when run in global mode' do
         let(:args) { ['personal', '--global'] }
-        it 'returns an empty array' do
+        it 'returns an array of the flags' do
           expect(options.flags).to eq ['--global']
         end
       end
 
       context 'when run with multiple flags' do
         let(:args) { ['personal', '--global', '--verbose'] }
-        it 'returns an empty array' do
+        it 'returns an array of the flags' do
           expect(options.flags).to eq ['--global', '--verbose']
         end
       end
@@ -103,6 +117,22 @@ RSpec.describe GitSwitch::Options do
       end
     end
 
+    context 'when run with list flag' do
+      let(:args) { ['-l'] }
+
+      it 'returns true' do
+        expect(options.valid_args?).to be true
+      end
+    end
+
+    context 'when run with config flag' do
+      let(:args) { ['-c'] }
+
+      it 'returns true' do
+        expect(options.valid_args?).to be true
+      end
+    end
+
     context 'when run with multiple flags' do
       let(:args) { ['personal','-g','-l'] }
       let(:options) { GitSwitch::Options.new(args) }
@@ -145,10 +175,47 @@ RSpec.describe GitSwitch::Options do
       end
     end
 
-    context 'when there are args' do
+    context 'with a profile' do
       let(:args) { ['foo'] }
       it 'returns false' do
         expect(options.usage?).to be false
+      end
+    end
+
+    context 'with a flag' do
+      let(:args) { ['-l'] }
+      it 'returns false' do
+        expect(options.usage?).to be false
+      end
+    end
+  end
+
+  describe 'config?' do
+    context 'when args includes -c' do
+      let(:args) { ['-c'] }
+      it 'returns true' do
+        expect(options.config?).to be true
+      end
+    end
+
+    context 'when args includes --config' do
+      let(:args) { ['--config'] }
+      it 'returns true' do
+        expect(options.config?).to be true
+      end
+    end
+
+    context 'when there are multiple args' do
+      let(:args) { ['-c', 'foo'] }
+      it 'returns false' do
+        expect(options.config?).to be false
+      end
+    end
+
+    context 'when args do not include -c or --config' do
+      let(:args) { [] }
+      it 'returns false' do
+        expect(options.config?).to be false
       end
     end
   end
@@ -165,6 +232,13 @@ RSpec.describe GitSwitch::Options do
       let(:args) { ['--list'] }
       it 'returns true' do
         expect(options.list?).to be true
+      end
+    end
+
+    context 'when there are multiple args' do
+      let(:args) { ['-l', 'foo'] }
+      it 'returns false' do
+        expect(options.list?).to be false
       end
     end
 
