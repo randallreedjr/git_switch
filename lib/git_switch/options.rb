@@ -8,14 +8,18 @@ module GitSwitch
     def flags
       @flags ||= args.select do |arg|
         arg.match(/\A\-[cglv]{1}\z/) ||
-          arg.match(/\A\-\-(config|global|list|verbose){1}\z/)
+          arg.match(/\A\-\-(config|global|list|verbose|version){1}\z/)
       end
     end
 
     def valid_args?
-      if config_flag? && args.count == 1
+      if config?
         return true
-      elsif list_flag? && args.count == 1
+      elsif list?
+        return true
+      elsif version?
+        return true
+      elsif verbose?
         return true
       elsif no_flags?
         return true
@@ -41,22 +45,34 @@ module GitSwitch
       list_flag? && args.count == 1
     end
 
+    def version?
+      version_flag? && args.count == 1
+    end
+
     def global?
       (flags.include? '-g') || (flags.include? '--global')
     end
 
     def verbose?
-      (flags.include? '-v') || (flags.include? '--verbose')
+      verbose_flag? && args.count > 1
     end
 
     private
+
+    def config_flag?
+      (flags.include? '-c') || (flags.include? '--config')
+    end
 
     def list_flag?
       (flags.include? '-l') || (flags.include? '--list')
     end
 
-    def config_flag?
-      (flags.include? '-c') || (flags.include? '--config')
+    def version_flag?
+      ((flags.include? '-v') && args.count == 1) || (flags.include? '--version')
+    end
+
+    def verbose_flag?
+      ((flags.include? '-v') && args.count > 1) || (flags.include? '--verbose')
     end
 
     def no_flags?
@@ -68,7 +84,7 @@ module GitSwitch
     end
 
     def flag_only?
-      list_flag? || config_flag?
+      list_flag? || config_flag? || version_flag?
     end
 
     def flag_count(args)
