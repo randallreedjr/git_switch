@@ -210,20 +210,9 @@ RSpec.describe GitSwitch::Switcher do
 
     let(:switcher) { GitSwitch::Switcher.new(['personal']) }
 
-    context 'when run with -g flag' do
-      let(:switcher) { GitSwitch::Switcher.new(['personal', '-g']) }
-      it 'calls set_git_config with global flag' do
-        expect(switcher).to receive(:set_git_config).with('--global')
-        switcher.run
-      end
-    end
-
-    context 'when run with --global flag' do
-      let(:switcher) { GitSwitch::Switcher.new(['personal', '--global']) }
-      it 'calls set_git_config with global flag' do
-        expect(switcher).to receive(:set_git_config).with('--global')
-        switcher.run
-      end
+    it 'calls set_git_config' do
+      expect(switcher).to receive(:set_git_config)
+      switcher.run
     end
 
     it 'calls set_ssh' do

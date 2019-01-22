@@ -5,7 +5,7 @@ module GitSwitch
   class Switcher
     attr_reader :config, :options
     delegate :usage?, :config?, :list?, :global?, to: :options
-    delegate :profile, :name, :username, :email, :ssh, :print_list, :configure!, :valid_profile?, to: :config
+    delegate :profile, :name, :username, :email, :ssh, :ssh_command, :print_list, :configure!, :valid_profile?, to: :config
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
@@ -38,21 +38,19 @@ module GitSwitch
     def set!
       return unless valid_profile? && git_repo?
 
-      flag = global? ? '--global' : ''
-
-      set_git_config(flag)
+      set_git_config
       set_ssh
-      print_settings(flag)
+      print_settings
     end
 
     def print_usage
       puts usage
     end
 
-    def print_settings(flag = '')
+    def print_settings
       if options.verbose?
         puts "\nGit Config:"
-        puts `git config #{flag} -l --show-origin | grep user`
+        puts `git config #{git_config_flag} -l --show-origin | grep user`
         puts "\nSSH:"
         puts `ssh-add -l`
       else
@@ -62,14 +60,18 @@ module GitSwitch
 
     private
 
-    def set_git_config(flag)
-      `git config #{flag} user.name "#{name}"`
-      `git config #{flag} user.username "#{username}"`
-      `git config #{flag} user.email "#{email}"`
+    def git_config_flag
+      @git_config_flag ||= global? ? '--global' : ''
+    end
+
+    def set_git_config
+      `git config #{git_config_flag} user.name "#{name}"`
+      `git config #{git_config_flag} user.username "#{username}"`
+      `git config #{git_config_flag} user.email "#{email}"`
     end
 
     def set_ssh
-      `ssh-add -D`
+      `git config #{git_config_flag} core.sshCommand "#{ssh_command}"`
       `ssh-add #{ssh}`
     end
 
