@@ -21,7 +21,9 @@ $ rvm @global do gem install git_switch
 
 ## Configuration
 
-Although a guided setup is planned, for now you must manually create your configuration at `~/.gitswitch`. The config file is in YAML format. Here is an example.
+To run the guided setup, use `git switch --config`.
+
+You may also manually create or edit your configuration at `~/.gitswitch`. The config file is in YAML format. Here is an example.
 
 ```
 personal:
@@ -42,7 +44,7 @@ The root keys can be any nickname you want. It should be memorable to make it ea
 
 ## Usage
 
-Git Switch follows the convention to create a custom git command. It can be invoked as follows, to either set your git profile locally or globally:
+Git Switch follows the convention to create a custom git command. It can be invoked as follows, to either set your git profile locally (no flag) or globally (`-g`):
 
 ```
 $ git switch personal
