@@ -97,6 +97,50 @@ RSpec.describe GitSwitch::Switcher do
     end
   end
 
+  describe '#edit?' do
+    context 'when -e is passed as only argument' do
+      it 'returns true' do
+        expect(GitSwitch::Switcher.new(['-e']).edit?).to be true
+      end
+    end
+
+    context 'when -e is passed as first argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['-e','foo']).edit?).to be false
+      end
+    end
+
+    context 'when -e is passed as second argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo','-e']).edit?).to be false
+      end
+    end
+
+    context 'when --edit is passed as only argument' do
+      it 'returns true' do
+        expect(GitSwitch::Switcher.new(['--edit']).edit?).to be true
+      end
+    end
+
+    context 'when --edit is passsed as first argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['--edit', 'foo']).edit?).to be false
+      end
+    end
+
+    context 'when --edit is passsed as second argument' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo','--edit']).edit?).to be false
+      end
+    end
+
+    context 'when no flag is passed' do
+      it 'returns false' do
+        expect(GitSwitch::Switcher.new(['foo']).edit?).to be false
+      end
+    end
+  end
+
   describe '#list?' do
     context 'when -l is passed as only argument' do
       it 'returns true' do
@@ -152,9 +196,18 @@ RSpec.describe GitSwitch::Switcher do
 
     context 'in config mode' do
       let(:switcher) { GitSwitch::Switcher.new(['-c']) }
-      it 'calls configure' do
+      it 'calls configure!' do
         expect(switcher).to receive(:configure!).and_call_original
         expect(switcher.config).to receive(:configure!)
+        switcher.run
+      end
+    end
+
+    context 'in edit mode' do
+      let(:switcher) { GitSwitch::Switcher.new(['-e']) }
+      it 'calls edit!' do
+        expect(switcher).to receive(:edit!).and_call_original
+        expect(switcher.config).to receive(:edit!)
         switcher.run
       end
     end
@@ -266,11 +319,14 @@ RSpec.describe GitSwitch::Switcher do
     let(:switcher) { GitSwitch::Switcher.new([]) }
     let(:expected_output) do
       <<~USAGE
-      usage: git switch [-c | --config] [-l | --list] [-v | --version]
+      usage: git switch [-c | --config] [-e | --edit] [-l | --list] [-v | --version]
                         <profile> [-v | --verbose] [-g | --global]
 
       configure profiles
           git switch -c
+
+      open configuration file in editor
+          git switch -e
 
       switch to a profile for local development only
           git switch <profile>

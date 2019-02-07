@@ -4,8 +4,8 @@ require 'active_support/core_ext/module/delegation'
 module GitSwitch
   class Switcher
     attr_reader :config, :options
-    delegate :usage?, :config?, :list?, :version?, :global?, to: :options
-    delegate :profile, :name, :username, :email, :ssh, :ssh_command, :print_list, :configure!, :valid_profile?, to: :config
+    delegate :usage?, :config?, :edit?, :list?, :version?, :global?, to: :options
+    delegate :profile, :name, :username, :email, :ssh, :ssh_command, :print_list, :configure!, :edit!, :valid_profile?, to: :config
 
     def initialize(args)
       raise ArgumentError unless args.is_a? Array
@@ -19,6 +19,8 @@ module GitSwitch
         print_usage
       elsif config?
         configure!
+      elsif edit?
+        edit!
       elsif list?
         print_list
       elsif version?
@@ -87,11 +89,14 @@ module GitSwitch
 
     def usage
       <<~USAGE
-      usage: git switch [-c | --config] [-l | --list] [-v | --version]
+      usage: git switch [-c | --config] [-e | --edit] [-l | --list] [-v | --version]
                         <profile> [-v | --verbose] [-g | --global]
 
       configure profiles
           git switch -c
+
+      open configuration file in editor
+          git switch -e
 
       switch to a profile for local development only
           git switch <profile>

@@ -7,13 +7,15 @@ module GitSwitch
 
     def flags
       @flags ||= args.select do |arg|
-        arg.match(/\A\-[cglv]{1}\z/) ||
-          arg.match(/\A\-\-(config|global|list|verbose|version){1}\z/)
+        arg.match(/\A\-[ceglv]{1}\z/) ||
+          arg.match(/\A\-\-(config|edit|global|list|verbose|version){1}\z/)
       end
     end
 
     def valid_args?
       if config?
+        return true
+      elsif edit?
         return true
       elsif list?
         return true
@@ -41,6 +43,10 @@ module GitSwitch
       config_flag? && args.count == 1
     end
 
+    def edit?
+      edit_flag? && args.count == 1
+    end
+
     def list?
       list_flag? && args.count == 1
     end
@@ -61,6 +67,10 @@ module GitSwitch
 
     def config_flag?
       (flags.include? '-c') || (flags.include? '--config')
+    end
+
+    def edit_flag?
+      (flags.include? '-e') || (flags.include? '--edit')
     end
 
     def list_flag?
