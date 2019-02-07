@@ -78,7 +78,11 @@ module GitSwitch
 
     def set_ssh
       `git config #{git_config_flag} core.sshCommand "#{ssh_command}"`
-      `ssh-add #{ssh}`
+      if options.verbose?
+        `ssh-add #{ssh}`
+      else
+        `ssh-add #{ssh} 2>/dev/null`
+      end
     end
 
     def usage
