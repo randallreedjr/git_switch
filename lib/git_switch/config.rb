@@ -51,6 +51,10 @@ module GitSwitch
       write_profiles_to_config_file if @profiles.any?
     end
 
+    def edit!
+      system("#{ENV['EDITOR']} '#{File.expand_path('~/.gitswitch')}'")
+    end
+
     def build_profiles
       puts "How many profiles would you like to create?"
       profile_count = STDIN.gets.chomp.to_i

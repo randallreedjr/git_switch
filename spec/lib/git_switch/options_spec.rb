@@ -12,6 +12,13 @@ RSpec.describe GitSwitch::Options do
         end
       end
 
+      context 'when run in edit mode' do
+        let(:args) { ['-e'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['-e']
+        end
+      end
+
       context 'when run in list mode' do
         let(:args) { ['-l'] }
         it 'returns an array of the flags' do
@@ -60,6 +67,13 @@ RSpec.describe GitSwitch::Options do
         let(:args) { ['--config'] }
         it 'returns an array of the flags' do
           expect(options.flags).to eq ['--config']
+        end
+      end
+
+      context 'when run in edit mode' do
+        let(:args) { ['--edit'] }
+        it 'returns an array of the flags' do
+          expect(options.flags).to eq ['--edit']
         end
       end
 
@@ -147,6 +161,14 @@ RSpec.describe GitSwitch::Options do
 
     context 'when run with config flag' do
       let(:args) { ['-c'] }
+
+      it 'returns true' do
+        expect(options.valid_args?).to be true
+      end
+    end
+
+    context 'when run with edit flag' do
+      let(:args) { ['-e'] }
 
       it 'returns true' do
         expect(options.valid_args?).to be true
@@ -284,6 +306,36 @@ RSpec.describe GitSwitch::Options do
       let(:args) { [] }
       it 'returns false' do
         expect(options.config?).to be false
+      end
+    end
+  end
+
+  describe 'edit?' do
+    context 'when args includes -e' do
+      let(:args) { ['-e'] }
+      it 'returns true' do
+        expect(options.edit?).to be true
+      end
+    end
+
+    context 'when args includes --edit' do
+      let(:args) { ['--edit'] }
+      it 'returns true' do
+        expect(options.edit?).to be true
+      end
+    end
+
+    context 'when there are multiple args' do
+      let(:args) { ['-e', 'foo'] }
+      it 'returns false' do
+        expect(options.edit?).to be false
+      end
+    end
+
+    context 'when args do not include -e or --edit' do
+      let(:args) { [] }
+      it 'returns false' do
+        expect(options.edit?).to be false
       end
     end
   end

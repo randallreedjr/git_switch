@@ -129,6 +129,19 @@ RSpec.describe GitSwitch::Config do
     end
   end
 
+  describe 'edit!' do
+    let(:config) { GitSwitch::Config.new(['-e']) }
+    before do
+      allow(ENV).to receive(:[]).and_call_original
+      allow(ENV).to receive(:[]).with('EDITOR').and_return('code -w')
+    end
+
+    it 'opens the config file in the editor' do
+      expect(config).to receive(:system).with("code -w '#{File.expand_path('spec/fixtures/.gitswitch')}'")
+      config.edit!
+    end
+  end
+
   describe 'ordinal' do
     let(:config) { GitSwitch::Config.new(['-c']) }
 
