@@ -1,7 +1,6 @@
-[![CircleCI](https://circleci.com/gh/randallreedjr/git_switch.svg?style=shield)](https://circleci.com/gh/randallreedjr/git_switch)
-[![Gem Version](https://badge.fury.io/rb/git_switch.svg)](https://badge.fury.io/rb/git_switch)
+# Git Switch (DEPRECATED)
 
-# Git Switch
+Git Switch is now [Git Swap](https://github.com/randallreedjr/git_swap). Due to git releasing a native switch command, the gem has been renamed.
 
 Git Switch is a command line utility to easily switch between multiple git profiles. It uses a `.gitswitch` YAML file to configure each profile (name, username, and email) and ssh key.
 
